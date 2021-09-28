@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
+
 
 public class MainManager : MonoBehaviour
 {
@@ -12,7 +14,9 @@ public class MainManager : MonoBehaviour
 
     public Text ScoreText;
     public GameObject GameOverText;
-    
+    public GameObject highScoreObject;
+
+    private TextMeshProUGUI highScoreDisplay;
     private bool m_Started = false;
     private int m_Points;
     
@@ -36,6 +40,8 @@ public class MainManager : MonoBehaviour
                 brick.onDestroyed.AddListener(AddPoint);
             }
         }
+        highScoreDisplay = highScoreObject.GetComponent<TextMeshProUGUI>();
+        highScoreDisplay.text = "Best Score: " + DataManager.Instance.HSPlayerName + ": " + DataManager.Instance.highScore;
     }
 
     private void Update()
@@ -58,6 +64,9 @@ public class MainManager : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            } else if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
             }
         }
     }
@@ -72,5 +81,14 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+        if (m_Points > DataManager.Instance.highScore)
+        {
+            DataManager.Instance.highScore = m_Points;
+            DataManager.Instance.HSPlayerName = DataManager.Instance.playerName;
+            DataManager.Instance.SaveNameAndHighscore();
+        }
+
     }
+
+
 }
